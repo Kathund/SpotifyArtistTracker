@@ -2,6 +2,7 @@ import CacheHandler from './Private/CacheHandler.js';
 import DiscordManager from './Discord/DiscordManager.js';
 import MongoManager from './Mongo/MongoManager.js';
 import RequestHandler from './Private/RequestHandler.js';
+import ScriptManager from './Scripts/ScriptManager.js';
 import SpotifyManager from './Spotify/SpotifyManager.js';
 
 class Application {
@@ -9,12 +10,14 @@ class Application {
   readonly discord: DiscordManager;
   readonly mongo: MongoManager;
   readonly requestHandler: RequestHandler;
+  readonly scripts: ScriptManager;
   readonly spotify: SpotifyManager;
   constructor() {
     this.cacheHandler = new CacheHandler();
     this.discord = new DiscordManager(this);
-    this.mongo = new MongoManager();
+    this.mongo = new MongoManager(this);
     this.requestHandler = new RequestHandler(this);
+    this.scripts = new ScriptManager(this);
     this.spotify = new SpotifyManager(this);
   }
 

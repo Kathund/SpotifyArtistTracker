@@ -12,3 +12,5 @@ export interface LogData {
   background: ChalkInstance;
   color: ChalkInstance;
 }
+
+export type Constructor<T> = new (data: any) => T;

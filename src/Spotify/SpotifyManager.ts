@@ -1,3 +1,4 @@
+import RequestHandler from './Private/RequestHandler.js';
 import Routes from './Routes/index.js';
 import express from 'express';
 import session from 'express-session';
@@ -5,11 +6,13 @@ import type Application from '../Application.js';
 
 class SpotifyManager {
   readonly Application: Application;
+  readonly requestHandler: RequestHandler;
   readonly expressServer: express.Application;
   readonly scopes: string[];
   readonly interval: NodeJS.Timeout;
   constructor(app: Application) {
     this.Application = app;
+    this.requestHandler = new RequestHandler(this);
     this.expressServer = express();
     this.startWebServer();
     this.scopes = ['user-read-email', 'user-read-private'];

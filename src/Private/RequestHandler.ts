@@ -2,8 +2,6 @@ import SpotifyArtistTrackerError from './Error.js';
 import type Application from '../Application.js';
 import type { RequestOptions } from '../Types/Requests.js';
 
-const BASE_URL = 'https://api.spotify.com/v1';
-
 class RequestData {
   readonly data: any;
   readonly headers: Record<string, any>;
@@ -31,11 +29,14 @@ class RequestData {
 
 class RequestHandler {
   readonly Application: Application;
+  readonly BASE_URL: string;
   constructor(app: Application) {
     this.Application = app;
+    this.BASE_URL = 'https://api.spotify.com/v1';
   }
 
   async request(endpoint: string, options?: RequestOptions): Promise<RequestData> {
+    endpoint = endpoint.replaceAll(this.BASE_URL, '');
     options = { raw: options?.raw ?? false, noCache: options?.noCache ?? false, method: options?.method ?? 'GET' };
     if (this.Application.cacheHandler.has(endpoint)) {
       const data = this.Application.cacheHandler.get(endpoint);
@@ -49,7 +50,7 @@ class RequestHandler {
     }
     const authFile = Bun.file('auth.json');
     const authData = await authFile.json();
-    const res = await fetch(BASE_URL + endpoint, {
+    const res = await fetch(this.BASE_URL + endpoint, {
       method: options.method,
       headers: { Authorization: `Bearer ${authData.key}` }
     });

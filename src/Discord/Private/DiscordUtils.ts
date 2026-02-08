@@ -21,12 +21,18 @@ class DiscordUtils {
     return new ErrorEmbed().setDescription(`\`\`\`${errorStack}\`\`\``);
   }
 
+  async getOwners(): Promise<string[]> {
+    if (!this.discord.client || !this.discord.client.application) return [];
+    const app = await this.discord.client.application.fetch();
+    return app.owner instanceof Team === true
+      ? app.owner.members.map((member) => member.id)
+      : [app.owner?.id as string];
+  }
+
   private async logError(error: Error | SpotifyArtistTrackerError) {
     if (!this.discord.client || !this.discord.client.application) return;
     if (error instanceof SpotifyArtistTrackerError === false) {
-      const app = await this.discord.client.application.fetch();
-      const users: string[] =
-        app.owner instanceof Team === true ? app.owner.members.map((member) => member.id) : [app.owner?.id as string];
+      const users: string[] = await this.getOwners();
       const channel = await this.discord.client.channels.fetch(process.env.LOGS_CHANNEL);
       if (channel && channel.isSendable()) {
         await channel.send({

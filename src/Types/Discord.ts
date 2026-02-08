@@ -10,3 +10,8 @@ declare module 'discord.js' {
     stringSelect: Collection<string, StringSelect>;
   }
 }
+
+export enum CommandType {
+  General,
+  Dev
+}

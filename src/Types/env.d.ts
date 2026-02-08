@@ -5,5 +5,6 @@ declare namespace NodeJS {
     SPOTIFY_CLIENT_ID: string;
     PORT: string;
     MONGO_URL: string;
+    DEV_SERVER_ID: string;
   }
 }

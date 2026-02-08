@@ -31,7 +31,7 @@ class UpdateArtists extends Script {
       type: album.type
     }));
     const newArtist: Artist = { id: artist.id, name: artist.name, servers: artist.servers, albums };
-    await this.checkForChanges(artist, newArtist);
+    //    await this.checkForChanges(artist, newArtist);
     return await this.scriptManager.Application.mongo.artist.saveItem(newArtist);
   }
 

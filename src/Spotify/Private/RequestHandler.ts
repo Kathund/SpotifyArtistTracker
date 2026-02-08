@@ -30,7 +30,7 @@ class RequestHandler {
 
   async getArtistAlbums(query: string): Promise<SimpleAlbum[]> {
     let albums: SimpleAlbum[] = [];
-    let nextUrl: string | null = `/artists/${query}/albums?limit=50&include_groups=album,single,appears_on,compilation`;
+    let nextUrl: string | null = `/artists/${query}/albums?limit=50&include_groups=album,single,appears_on`;
 
     while (nextUrl) {
       const res = await this.spotify.Application.requestHandler.request(nextUrl);

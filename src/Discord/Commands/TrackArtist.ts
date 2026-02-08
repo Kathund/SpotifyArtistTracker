@@ -24,6 +24,9 @@ class TrackArtist extends Command {
             ChannelType.PublicThread,
             ChannelType.PrivateThread
           )
+      )
+      .addRoleOption((option) =>
+        option.setName('alert-role').setDescription('The role that gets mentioned when something changes')
       );
   }
 
@@ -57,13 +60,14 @@ class TrackArtist extends Command {
     const channelInput = interaction.options.getChannel('channel') ?? undefined;
     if (channelInput === undefined) throw new SpotifyArtistTrackerError('What? Why did you not put an channel');
     const channel = await interaction.client.channels.fetch(channelInput.id);
+    const role = interaction.options.getRole('alert-role') ?? undefined;
     const artist = await this.discord.Application.spotify.requestHandler.getArtist(artistId);
     if (channel === undefined || channel === null || !channel.isSendable()) {
       throw new SpotifyArtistTrackerError("Channel doesn't exist");
     }
     const saveData = await this.discord.Application.mongo.artist.addServerToArtist(
       { name: artist.name, id: artist.id },
-      { id: interaction.guild.id, channel: channel.id }
+      { id: interaction.guild.id, channel: channel.id, role: role?.id ?? undefined }
     );
     if (!saveData.success) throw new SpotifyArtistTrackerError("Something wen't wrong saving your guild's data");
     await channel.send({ embeds: [artist.toEmbed().setTitle('Now tracking new music')] });

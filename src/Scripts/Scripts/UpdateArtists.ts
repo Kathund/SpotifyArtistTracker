@@ -6,6 +6,11 @@ import type { Artist, ArtistAlbum, ServerArtist } from '../../Mongo/Private/Sche
 import type { MongoReturnData } from '../../Types/Mongo.js';
 import type { SendableChannels } from 'discord.js';
 
+interface AlertChannel {
+  channel: SendableChannels;
+  role?: string | null | undefined;
+}
+
 class UpdateArtists extends Script {
   async updateArtist(artist: Artist): Promise<MongoReturnData<Artist>> {
     const artistAlbums = await this.scriptManager.Application.spotify.requestHandler.getArtistAlbums(artist.id);
@@ -39,24 +44,25 @@ class UpdateArtists extends Script {
     await this.notify(comparison.removed, channels, false);
   }
 
-  private async getChannels(servers: ServerArtist[]): Promise<SendableChannels[]> {
+  private async getChannels(servers: ServerArtist[]): Promise<AlertChannel[]> {
     if (!this.scriptManager.Application.discord.client) return [];
-    const channels: SendableChannels[] = [];
+    const channels: AlertChannel[] = [];
 
     for (const server of servers) {
       const channel = await this.scriptManager.Application.discord.client.channels.fetch(server.channel);
-      if (channel && channel.isSendable()) channels.push(channel);
+      if (channel && channel.isSendable()) channels.push({ role: server.role, channel });
     }
 
     return channels;
   }
 
-  private async notify(albums: ArtistAlbum[], channels: SendableChannels[], added: boolean) {
+  private async notify(albums: ArtistAlbum[], channels: AlertChannel[], added: boolean) {
     if (albums.length === 0) return;
 
     for (const album of albums) {
-      for (const channel of channels) {
-        await channel.send({
+      for (const channelData of channels) {
+        await channelData.channel.send({
+          content: channelData.role ? `<@&${channelData.role}>` : '',
           embeds: [
             new Embed()
               .setTitle(album.name)

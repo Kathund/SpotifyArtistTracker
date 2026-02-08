@@ -8,7 +8,8 @@ export type Simple = InferSchemaType<typeof simpleSchema>;
 
 export const artistServerSchema = new Schema({
   id: { type: String, required: true },
-  channel: { type: String, required: true }
+  channel: { type: String, required: true },
+  role: { type: String, required: false, default: undefined }
 });
 export type ServerArtist = InferSchemaType<typeof artistServerSchema>;
 
